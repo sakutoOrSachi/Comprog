@@ -1,0 +1,243 @@
+#include <iostream>
+using namespace std;
+
+typedef unsigned int MyInt;
+typedef string Username;
+
+double balance = 10000;
+double exchangeRate = 55.77;
+
+struct User {
+    Username username;
+    int pin;
+};
+
+enum MenuOption { GAME = 1, CALCULATOR, BANK, CONVERTER, SORT, EXIT };
+
+bool login(User admin) {
+    Username inputUser;
+    int inputPin;
+    int attempts = 3;
+
+    while (attempts--) {
+        system("cls");
+        cout << "\nEnter Username: ";
+        cin >> inputUser;
+        cout << "Enter 4-digit PIN: ";
+        cin >> inputPin;
+
+        if (inputUser == admin.username && inputPin == admin.pin) {
+            cout << "\nLogin Successful!\n";
+            system("pause");
+            return true;
+        } else {
+            cout << "Incorrect username or PIN. Attempts left: " << attempts << endl;
+            system("pause");
+        }
+    }
+
+    cout << "\nToo many failed attempts. Exiting.\n";
+    system("pause");
+    return false;
+}
+
+void Sort(int arr[], MyInt n) {
+    for (MyInt i = 0; i < n - 1; i++) {
+        for (MyInt j = 0; j < n - i - 1; j++) {
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+            }
+        }
+    }
+}
+
+void sortNumbers() {
+    system("cls");
+    MyInt n;
+    cout << "Enter number of elements to sort: ";
+    cin >> n;
+
+    int* arr = new int[n];
+    cout << "Enter " << n << " integers:\n";
+    for (MyInt i = 0; i < n; i++) {
+        cin >> arr[i];
+    }
+
+    Sort(arr, n);
+
+    cout << "Sorted numbers: ";
+    for (MyInt i = 0; i < n; i++) {
+        cout << arr[i] << " ";
+    }
+    cout << endl;
+    delete[] arr;
+    system("pause");
+}
+
+void Game() {
+    int choice, guess, number = 6;
+    double userNumber;
+
+    do {
+        system("cls");
+        cout << "\n===== GAME MENU =====\n";
+        cout << "1. You guess\n2. I guess\n3. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            do {
+                cout << "Guess the number (1-10): ";
+                cin >> guess;
+                if (guess > number) cout << "Too high!\n";
+                else if (guess < number) cout << "Too low!\n";
+                else cout << "Correct!\n";
+            } while (guess != number);
+            system("pause");
+        } else if (choice == 2) {
+            cout << "Enter a number for me to guess: ";
+            cin >> userNumber;
+            cout << "I guess your number is " << userNumber << ". Right?\n";
+            system("pause");
+        }
+    } while (choice != 3);
+}
+
+double calculate(double a, double b, char op) {
+    switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return (b != 0) ? a / b : 0;
+        default: return 0;
+    }
+}
+
+int calculate(int a, int b, char op) {
+    switch (op) {
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return (b != 0) ? a / b : 0;
+        default: return 0;
+    }
+}
+
+void calculator() {
+    int choice;
+    double a, b;
+
+    do {
+        system("cls");
+        cout << "\n===== CALCULATOR =====\n";
+        cout << "1. Add\n2. Subtract\n3. Multiply\n4. Divide\n5. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice >= 1 && choice <= 4) {
+            cout << "Enter two numbers: ";
+            cin >> a >> b;
+        }
+
+        switch (choice) {
+            case 1: cout << "Result: " << calculate(a, b, '+') << endl; break;
+            case 2: cout << "Result: " << calculate(a, b, '-') << endl; break;
+            case 3: cout << "Result: " << calculate(a, b, '*') << endl; break;
+            case 4:
+                if (b != 0) cout << "Result: " << calculate(a, b, '/') << endl;
+                else cout << "Cannot divide by zero.\n";
+                break;
+        }
+
+        if (choice != 5) system("pause");
+
+    } while (choice != 5);
+}
+
+void bank() {
+    int choice;
+    double amount;
+
+    do {
+        system("cls");
+        cout << "\n===== BANK MENU =====\n";
+        cout << "Balance: PHP " << balance << endl;
+        cout << "1. Deposit\n2. Withdraw\n3. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "Enter amount to deposit: ";
+            cin >> amount;
+            if (amount > 0) balance += amount;
+        } else if (choice == 2) {
+            cout << "Enter amount to withdraw: ";
+            cin >> amount;
+            if (amount > 0 && amount <= balance) balance -= amount;
+            else cout << "Invalid amount.\n";
+        }
+
+        if (choice != 3) system("pause");
+
+    } while (choice != 3);
+}
+
+void moneyConverter() {
+    int choice;
+    double amount;
+
+    struct {
+        double php;
+        double usd;
+    } currency;
+
+    do {
+        system("cls");
+        cout << "\n===== MONEY CONVERTER =====\n";
+        cout << "1. PHP to USD\n2. USD to PHP\n3. Exit\n";
+        cout << "Choice: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            cout << "Enter PHP: ";
+            cin >> currency.php;
+            cout << "USD: $" << currency.php / exchangeRate << endl;
+        } else if (choice == 2) {
+            cout << "Enter USD: ";
+            cin >> currency.usd;
+            cout << "PHP: " << currency.usd * exchangeRate << endl;
+        }
+
+        if (choice != 3) system("pause");
+
+    } while (choice != 3);
+}
+
+int main() {
+    User admin = {"admin", 1234};
+
+    if (!login(admin)) return 0;
+
+    MenuOption choice;
+    do {
+        system("cls");
+        cout << "\n===== MAIN MENU =====\n";
+        cout << "1. Game\n2. Calculator\n3. Bank\n4. Converter\n5. Sort Numbers\n6. Exit\n";
+        cout << "Choice: ";
+        int input;
+        cin >> input;
+        choice = static_cast<MenuOption>(input);
+        system("cls");
+
+        switch (choice) {
+            case GAME: Game(); break;
+            case CALCULATOR: calculator(); break;
+            case BANK: bank(); break;
+            case CONVERTER: moneyConverter(); break;
+            case SORT: sortNumbers(); break;
+        }
+
+    } while (choice != EXIT);
+
+    return 0;
+}
